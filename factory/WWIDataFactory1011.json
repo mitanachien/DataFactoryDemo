@@ -1,0 +1,9 @@
+{
+	"name": "WWIDataFactory1011",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4e185e46-0b88-4b81-8167-d7cea142b232",
+		"tenantId": "cea852f4-b1b3-428c-99c4-fe014418e290"
+	}
+}
