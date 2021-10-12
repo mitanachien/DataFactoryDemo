@@ -1,5 +1,5 @@
 {
-	"name": "odsSalesToInt",
+	"name": "odsSalesCustomers",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ods",
@@ -7,6 +7,10 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": "sales",
+			"table": "Customers"
+		}
 	}
 }
