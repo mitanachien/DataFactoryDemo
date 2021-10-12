@@ -1,5 +1,5 @@
 {
-	"name": "odsSalesBuyingGroups",
+	"name": "odsSalesCustomerCategories",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ods",
@@ -16,12 +16,12 @@
 				"type": "uniqueidentifier"
 			},
 			{
-				"name": "BuyingGroupID",
+				"name": "CustomerCategoryID",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "BuyingGroupName",
+				"name": "CustomerCategoryName",
 				"type": "nvarchar"
 			},
 			{
@@ -42,7 +42,7 @@
 		],
 		"typeProperties": {
 			"schema": "sales",
-			"table": "BuyingGroups"
+			"table": "CustomerCategories"
 		}
 	}
 }
