@@ -44,7 +44,7 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"preCopyScript": "TRUNCATE TABLE @{item().MyTableWithSchema};\nINSERT \nINTO @{item().MyTableWithSchema}\n",
+									"preCopyScript": "TRUNCATE TABLE @{item().MyTableWithSchema};\nSELECT newid() AS SurrogateKey\nINTO @{item().MyTableWithSchema};\n",
 									"tableOption": "autoCreate",
 									"disableMetricsCollection": false
 								},
@@ -80,37 +80,6 @@
 									}
 								}
 							]
-						},
-						{
-							"name": "Add Surrogate",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [
-								{
-									"activity": "Copy Tables",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "1.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "dataflow1",
-									"type": "DataFlowReference"
-								},
-								"integrationRuntime": {
-									"referenceName": "integrationRuntime2",
-									"type": "IntegrationRuntimeReference"
-								},
-								"traceLevel": "Fine"
-							}
 						}
 					]
 				}
