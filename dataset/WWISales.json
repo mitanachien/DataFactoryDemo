@@ -5,6 +5,9 @@
 			"referenceName": "WWI",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "WWIToOds"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [

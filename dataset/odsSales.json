@@ -13,6 +13,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "WWIToOds"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [],
