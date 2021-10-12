@@ -36,7 +36,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "SELECT newid() AS SurrogateKey\nINTO @{item().MyTableWithSchema};\nSELECT * FROM @{item().MyTableWithSchema}\n",
+										"value": "SELECT newid() AS SurrogateKey, * FROM @{item().MyTableWithSchema}\n",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
