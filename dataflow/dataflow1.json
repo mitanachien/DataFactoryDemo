@@ -21,12 +21,8 @@
 					"name": "odsSalesToIntWithSurr"
 				}
 			],
-			"transformations": [
-				{
-					"name": "SurrogateKey1"
-				}
-			],
-			"script": "parameters{\n\tparameter1 as string ($parameter1)\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: ($parameter1),\n\tformat: 'query') ~> source1\nsource1 keyGenerate(output(SurrogateKey as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> odsSalesToIntWithSurr"
+			"transformations": [],
+			"script": "parameters{\n\tparameter1 as string ($parameter1)\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> \n sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> odsSalesToIntWithSurr"
 		}
 	}
 }
