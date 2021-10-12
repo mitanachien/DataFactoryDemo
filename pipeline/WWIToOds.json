@@ -99,7 +99,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT '[' + TABLE_SCHEMA + '].[' + TABLE_NAME + ']' As MyTableWithSchema\n, TABLE_SCHEMA As MySchema,\nTABLE_NAME As MyTable\nFROM [WideWorldImporters-Standard].information_schema.tables\nWHERE table_type = 'BASE TABLE' AND table_schema = 'Sales';",
+						"sqlReaderQuery": "SELECT '[' + TABLE_SCHEMA + '].[' + TABLE_NAME + ']' As MyTableWithSchema\n, TABLE_SCHEMA As MySchema,\nTABLE_NAME As MyTable\nFROM [WideWorldImporters-Standard].information_schema.tables\nWHERE table_type = 'BASE TABLE';",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
