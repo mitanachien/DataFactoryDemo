@@ -1,0 +1,12 @@
+{
+	"name": "odsSalesToInt",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ods",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
