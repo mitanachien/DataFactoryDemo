@@ -44,7 +44,7 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"preCopyScript": "TRUNCATE TABLE @{item().MyTableWithSchema};\n",
+									"preCopyScript": "DROP TABLE @{item().MyTableWithSchema};\n",
 									"tableOption": "autoCreate",
 									"disableMetricsCollection": false
 								},
