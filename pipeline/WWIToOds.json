@@ -36,7 +36,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "SELECT * FROM @{item().MyTableWithSchema}",
+										"value": "SELECT newid() AS SurrogateKey\nINTO @{item().MyTableWithSchema};\nSELECT * FROM @{item().MyTableWithSchema}\n",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -44,7 +44,7 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"preCopyScript": "TRUNCATE TABLE @{item().MyTableWithSchema};\nSELECT newid() AS SurrogateKey\nINTO @{item().MyTableWithSchema};\n",
+									"preCopyScript": "TRUNCATE TABLE @{item().MyTableWithSchema};\n",
 									"tableOption": "autoCreate",
 									"disableMetricsCollection": false
 								},
