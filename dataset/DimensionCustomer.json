@@ -59,6 +59,14 @@
 				"name": "Lineage Key",
 				"type": "int",
 				"precision": 10
+			},
+			{
+				"name": "Customer Surrogate Key",
+				"type": "nchar"
+			},
+			{
+				"name": "iscurrent",
+				"type": "bit"
 			}
 		],
 		"typeProperties": {
