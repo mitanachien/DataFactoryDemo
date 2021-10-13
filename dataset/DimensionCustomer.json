@@ -1,12 +1,12 @@
 {
-	"name": "DimentionCustomer",
+	"name": "DimensionCustomer",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "WWI_DW",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "IntegrationToDimensionOrFact"
+			"name": "IntegrationToDimension"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
