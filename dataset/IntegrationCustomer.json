@@ -54,6 +54,10 @@
 				"name": "Valid To",
 				"type": "datetime2",
 				"scale": 7
+			},
+			{
+				"name": "Customer Surrogate Key",
+				"type": "nchar"
 			}
 		],
 		"typeProperties": {
