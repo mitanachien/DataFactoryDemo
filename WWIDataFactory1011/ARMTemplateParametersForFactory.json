@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "WWIDataFactory1011"
+		},
+		"WWI_connectionString": {
+			"value": ""
+		},
+		"WWI_DW_connectionString": {
+			"value": ""
+		},
+		"ods_connectionString": {
+			"value": ""
+		}
+	}
+}
