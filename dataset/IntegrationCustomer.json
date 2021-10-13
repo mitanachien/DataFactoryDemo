@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "IntegrationToDimensionOrFact"
+			"name": "IntegrationToDimension"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
