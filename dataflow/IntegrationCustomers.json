@@ -1,6 +1,9 @@
 {
 	"name": "IntegrationCustomers",
 	"properties": {
+		"folder": {
+			"name": "odsToIntegration"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
