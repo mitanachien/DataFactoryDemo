@@ -50,8 +50,8 @@
 								"datasetParameters": {
 									"Integration": {},
 									"DimCustomer": {},
-									"SinkUpdate": {},
-									"sinkInactive": {},
+									"SinkInactive": {},
+									"sinkUpdate": {},
 									"sinkNew": {}
 								}
 							},
@@ -200,14 +200,14 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "WWISales",
+											"referenceName": "WWI",
 											"type": "DatasetReference",
 											"parameters": {}
 										}
 									],
 									"outputs": [
 										{
-											"referenceName": "odsSales",
+											"referenceName": "ods",
 											"type": "DatasetReference",
 											"parameters": {
 												"TableName": {
@@ -245,7 +245,7 @@
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "WWISales",
+								"referenceName": "WWI",
 								"type": "DatasetReference",
 								"parameters": {}
 							},
@@ -264,8 +264,8 @@
 				"lastPublishTime": "2021-10-11T19:54:46Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/WWISales')]",
-				"[concat(variables('factoryId'), '/datasets/odsSales')]"
+				"[concat(variables('factoryId'), '/datasets/WWI')]",
+				"[concat(variables('factoryId'), '/datasets/ods')]"
 			]
 		},
 		{
@@ -424,7 +424,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/WWISales')]",
+			"name": "[concat(parameters('factoryName'), '/WWI')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -728,7 +728,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/odsSales')]",
+			"name": "[concat(parameters('factoryName'), '/ods')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1144,14 +1144,14 @@
 								"referenceName": "DimensionCustomer",
 								"type": "DatasetReference"
 							},
-							"name": "SinkUpdate"
+							"name": "SinkInactive"
 						},
 						{
 							"dataset": {
 								"referenceName": "DimensionCustomer",
 								"type": "DatasetReference"
 							},
-							"name": "sinkInactive"
+							"name": "sinkUpdate"
 						},
 						{
 							"dataset": {
@@ -1172,25 +1172,22 @@
 							"name": "SetAttrsForNew"
 						},
 						{
-							"name": "SetAttrUpdate"
-						},
-						{
 							"name": "checkForChanges"
 						},
 						{
-							"name": "SetAttrInactive"
-						},
-						{
-							"name": "AlterRow1"
+							"name": "SetAttrUpdate"
 						},
 						{
 							"name": "SelectColumns"
 						},
 						{
-							"name": "Filter1"
+							"name": "AlterRow1"
+						},
+						{
+							"name": "SetAttrInactive"
 						}
 					],
-					"script": "source(output(\n\t\t{Customer Staging Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Customer Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Integration\nsource(output(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimCustomer\nIntegration, DimCustomer lookup(Integration@{WWI Customer ID} == DimCustomer@{WWI Customer ID},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupIDs\nSelectColumns split(isNull(iscurrent),\n\tdisjoint: false) ~> ConditionSplit1@(NewRow, CheckForUpdates)\nConditionSplit1@NewRow derive(iscurrent = 1,\n\t\t{Valid From} = currentTimestamp(),\n\t\t{Lineage Key} = 2) ~> SetAttrsForNew\ncheckForChanges derive(iscurrent = 1,\n\t\t{Valid From} = currentTimestamp()) ~> SetAttrUpdate\nConditionSplit1@CheckForUpdates, DimCustomer exists(ConditionSplit1@CheckForUpdates@{WWI Customer ID} == DimCustomer@{WWI Customer ID} &&\r\n\r\n(\r\n    ConditionSplit1@CheckForUpdates@Customer != DimCustomer@Customer ||\r\n    ConditionSplit1@CheckForUpdates@{Bill To Customer} != DimCustomer@{Bill To Customer} ||\r\n    ConditionSplit1@CheckForUpdates@Category != DimCustomer@Category ||\r\n    ConditionSplit1@CheckForUpdates@{Buying Group} != DimCustomer@{Buying Group} ||\r\n    ConditionSplit1@CheckForUpdates@{Primary Contact} != DimCustomer@{Primary Contact} ||\r\n    ConditionSplit1@CheckForUpdates@{Postal Code} != DimCustomer@{Postal Code} ||\r\n    {Int Valid From} != {Valid From}\r\n),\n\tnegate:false,\n\tbroadcast: 'left')~> checkForChanges\nFilter1 derive(iscurrent = 0,\n\t\t{New Valid To} = currentTimestamp()) ~> SetAttrInactive\nSetAttrInactive alterRow(updateIf(true())) ~> AlterRow1\nLookupIDs select(mapColumn(\n\t\t{WWI Customer ID} = Integration@{WWI Customer ID},\n\t\tCustomer = Integration@Customer,\n\t\t{Bill To Customer} = Integration@{Bill To Customer},\n\t\tCategory = Integration@Category,\n\t\t{Buying Group} = Integration@{Buying Group},\n\t\t{Primary Contact} = Integration@{Primary Contact},\n\t\t{Postal Code} = Integration@{Postal Code},\n\t\t{Int Valid From} = Integration@{Valid From},\n\t\t{Int Valid To} = Integration@{Valid To},\n\t\t{Customer Surrogate Key} = Integration@{Customer Surrogate Key},\n\t\t{Dim Valid From} = DimCustomer@{Valid From},\n\t\t{Dim Valid To} = DimCustomer@{Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\ncheckForChanges filter({Dim Valid To} == {Int Valid To}) ~> Filter1\nSetAttrUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code} = {Int Valid To},\n\t\t{Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> SinkUpdate\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['WWI Customer ID'],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {Dim Valid From},\n\t\t{Valid To} = {New Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkInactive\nSetAttrsForNew sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkNew"
+					"script": "source(output(\n\t\t{Customer Staging Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Customer Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Integration\nsource(output(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimCustomer\nIntegration, DimCustomer lookup(Integration@{WWI Customer ID} == DimCustomer@{WWI Customer ID},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupIDs\nSelectColumns split(isNull(iscurrent),\n\tdisjoint: true) ~> ConditionSplit1@(NewRow, CheckForUpdates)\nConditionSplit1@NewRow derive(iscurrent = true(),\n\t\t{Valid From} = currentTimestamp(),\n\t\t{Lineage Key} = 2) ~> SetAttrsForNew\nConditionSplit1@CheckForUpdates, DimCustomer exists(ConditionSplit1@CheckForUpdates@{WWI Customer ID} == DimCustomer@{WWI Customer ID} &&\r\n\r\n(\r\n    ConditionSplit1@CheckForUpdates@Customer != DimCustomer@Customer ||\r\n    ConditionSplit1@CheckForUpdates@{Bill To Customer} != DimCustomer@{Bill To Customer} ||\r\n    ConditionSplit1@CheckForUpdates@Category != DimCustomer@Category ||\r\n    ConditionSplit1@CheckForUpdates@{Buying Group} != DimCustomer@{Buying Group} ||\r\n    ConditionSplit1@CheckForUpdates@{Primary Contact} != DimCustomer@{Primary Contact} ||\r\n    ConditionSplit1@CheckForUpdates@{Postal Code} != DimCustomer@{Postal Code} ||\r\n    {Int Valid From} != {Valid From} ||\r\n    {Int Valid To} != {Valid To}\r\n),\n\tnegate:false,\n\tbroadcast: 'left')~> checkForChanges\ncheckForChanges derive(iscurrent = true(),\n\t\t{New Valid From} = currentTimestamp()) ~> SetAttrUpdate\nLookupIDs select(mapColumn(\n\t\t{WWI Customer ID} = Integration@{WWI Customer ID},\n\t\tCustomer = Integration@Customer,\n\t\t{Bill To Customer} = Integration@{Bill To Customer},\n\t\tCategory = Integration@Category,\n\t\t{Buying Group} = Integration@{Buying Group},\n\t\t{Primary Contact} = Integration@{Primary Contact},\n\t\t{Postal Code} = Integration@{Postal Code},\n\t\t{Int Valid From} = Integration@{Valid From},\n\t\t{Int Valid To} = Integration@{Valid To},\n\t\t{Customer Surrogate Key} = Integration@{Customer Surrogate Key},\n\t\t{Dim Valid From} = DimCustomer@{Valid From},\n\t\t{Dim Valid To} = DimCustomer@{Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nSetAttrInactive alterRow(updateIf(iscurrent == true())) ~> AlterRow1\ncheckForChanges derive({New Valid To} = currentTimestamp()) ~> SetAttrInactive\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['WWI Customer ID','iscurrent'],\n\tformat: 'table',\n\tpreSQLs:['UPDATE Dimension.Customer\\nSET [Valid To] = GETDATE()\\nWHERE iscurrent = 1;'],\n\tpostSQLs:['UPDATE Dimension.Customer\\nSET iscurrent = 0;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {Dim Valid From},\n\t\t{Valid To} = {New Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> SinkInactive\nSetAttrUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 3,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {New Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkUpdate\nSetAttrsForNew sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkNew"
 				}
 			},
 			"dependsOn": [
