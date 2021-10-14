@@ -1,5 +1,5 @@
 {
-	"name": "OdsToIntegrationCustomers",
+	"name": "Customers",
 	"properties": {
 		"activities": [
 			{
@@ -59,7 +59,7 @@
 			}
 		],
 		"folder": {
-			"name": "OdsToIntegration"
+			"name": "OdsToWarehouse"
 		},
 		"annotations": []
 	}

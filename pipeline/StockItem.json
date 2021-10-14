@@ -1,5 +1,5 @@
 {
-	"name": "odsToIntegrationStockItem",
+	"name": "StockItem",
 	"properties": {
 		"activities": [
 			{
@@ -28,7 +28,7 @@
 			}
 		],
 		"folder": {
-			"name": "OdsToIntegration"
+			"name": "OdsToWarehouse"
 		},
 		"annotations": []
 	}
