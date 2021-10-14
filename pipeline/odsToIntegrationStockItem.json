@@ -1,0 +1,9 @@
+{
+	"name": "odsToIntegrationStockItem",
+	"properties": {
+		"folder": {
+			"name": "OdsToIntegration"
+		},
+		"annotations": []
+	}
+}
