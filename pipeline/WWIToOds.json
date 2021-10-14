@@ -63,13 +63,13 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "WWISales",
+									"referenceName": "WWI",
 									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
 								{
-									"referenceName": "odsSales",
+									"referenceName": "ods",
 									"type": "DatasetReference",
 									"parameters": {
 										"TableName": {
@@ -107,7 +107,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "WWISales",
+						"referenceName": "WWI",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
