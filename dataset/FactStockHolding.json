@@ -55,6 +55,10 @@
 				"name": "Lineage Key",
 				"type": "int",
 				"precision": 10
+			},
+			{
+				"name": "StockHolding Surrogate Key",
+				"type": "nchar"
 			}
 		],
 		"typeProperties": {
