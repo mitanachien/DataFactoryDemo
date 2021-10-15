@@ -1,0 +1,506 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "WWIDataFactory1011"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "FactStockHolding",
+								"type": "DataFlowReference"
+							},
+							"integrationRuntime": {
+								"referenceName": "integrationRuntime2",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/FactStockHolding')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/odsWarehouseStockItemHoldings')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ods",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "odsToIntegrationStockItem"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SurrogateKey",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "StockItemID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "QuantityOnHand",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BinLocation",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastStocktakeQuantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LastCostPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "ReorderLevel",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TargetStockLevel",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "Warehouse",
+					"table": "StockItemHoldings"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WWI_DW_StockHolding')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "odsToIntegrationStockItem"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Holding Staging Key",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "Stock Item Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity On Hand",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Bin Location",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Last Stocktake Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Last Cost Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Reorder Level",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Target Stock Level",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WWI Stock Item ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "StockHolding Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Integration",
+					"table": "StockHolding_Staging"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IntegrationStockHolding')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "odsToIntegration"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "odsWarehouseStockItemHoldings",
+								"type": "DatasetReference"
+							},
+							"name": "odsStockHolding"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionStockItem",
+								"type": "DatasetReference"
+							},
+							"name": "dimStockItem"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "WWI_DW_StockHolding",
+								"type": "DatasetReference"
+							},
+							"name": "IntStockHolding"
+						}
+					],
+					"transformations": [
+						{
+							"name": "odsStockHoldingdimStockItem"
+						},
+						{
+							"name": "Filter1"
+						}
+					],
+					"script": "source(output(\n\t\tSurrogateKey as string,\n\t\tStockItemID as integer,\n\t\tQuantityOnHand as integer,\n\t\tBinLocation as string,\n\t\tLastStocktakeQuantity as integer,\n\t\tLastCostPrice as decimal(18,2),\n\t\tReorderLevel as integer,\n\t\tTargetStockLevel as integer,\n\t\tLastEditedBy as integer,\n\t\tLastEditedWhen as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> odsStockHolding\nsource(output(\n\t\t{Stock Item Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\tiscurrent as boolean,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> dimStockItem\nodsStockHolding, dimStockItem join(StockItemID == {WWI Stock Item ID},\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> odsStockHoldingdimStockItem\nodsStockHoldingdimStockItem filter(iscurrent == true()) ~> Filter1\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Stock Holding Staging Key} as long,\n\t\t{Stock Item Key} as integer,\n\t\t{Quantity On Hand} as integer,\n\t\t{Bin Location} as string,\n\t\t{Last Stocktake Quantity} as integer,\n\t\t{Last Cost Price} as decimal(18,2),\n\t\t{Reorder Level} as integer,\n\t\t{Target Stock Level} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{StockHolding Surrogate Key} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{Stock Item Key},\n\t\t{Quantity On Hand} = QuantityOnHand,\n\t\t{Bin Location} = BinLocation,\n\t\t{Last Stocktake Quantity} = LastStocktakeQuantity,\n\t\t{Last Cost Price} = LastCostPrice,\n\t\t{Reorder Level} = ReorderLevel,\n\t\t{Target Stock Level} = TargetStockLevel,\n\t\t{WWI Stock Item ID} = StockItemID,\n\t\t{StockHolding Surrogate Key} = SurrogateKey\n\t)) ~> IntStockHolding"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/odsWarehouseStockItemHoldings')]",
+				"[concat(variables('factoryId'), '/datasets/WWI_DW_StockHolding')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StockHolding')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "odsToIntegration",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "IntegrationStockHolding",
+								"type": "DataFlowReference"
+							},
+							"integrationRuntime": {
+								"referenceName": "integrationRuntime2",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "odsToIntegration",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "TRUNCATE TABLE [Fact].[Stock Holding];",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "FactStockHolding",
+								"type": "DatasetReference"
+							}
+						}
+					}
+				],
+				"folder": {
+					"name": "OdsToWarehouse"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/IntegrationStockHolding')]",
+				"[concat(variables('factoryId'), '/datasets/FactStockHolding')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FactStockHolding')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "IntegrationToFact"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "IntegrationStockHolding",
+								"type": "DatasetReference"
+							},
+							"name": "Int"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "FactStockHolding",
+								"type": "DatasetReference"
+							},
+							"name": "sinkInsert"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\t{Stock Holding Staging Key} as long,\n\t\t{Stock Item Key} as integer,\n\t\t{Quantity On Hand} as integer,\n\t\t{Bin Location} as string,\n\t\t{Last Stocktake Quantity} as integer,\n\t\t{Last Cost Price} as decimal(18,2),\n\t\t{Reorder Level} as integer,\n\t\t{Target Stock Level} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{StockHolding Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Int\nInt derive({Lineage Key} = 12) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Stock Holding Key} as long,\n\t\t{Stock Item Key} as integer,\n\t\t{Quantity On Hand} as integer,\n\t\t{Bin Location} as string,\n\t\t{Last Stocktake Quantity} as integer,\n\t\t{Last Cost Price} as decimal(18,2),\n\t\t{Reorder Level} as integer,\n\t\t{Target Stock Level} as integer,\n\t\t{Lineage Key} as integer,\n\t\t{StockHolding Surrogate Key} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{Stock Item Key},\n\t\t{Quantity On Hand},\n\t\t{Bin Location},\n\t\t{Last Stocktake Quantity},\n\t\t{Last Cost Price},\n\t\t{Reorder Level},\n\t\t{Target Stock Level},\n\t\t{Lineage Key},\n\t\t{StockHolding Surrogate Key}\n\t)) ~> sinkInsert"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/IntegrationStockHolding')]",
+				"[concat(variables('factoryId'), '/datasets/FactStockHolding')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IntegrationStockHolding')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IntegrationToFact"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Holding Staging Key",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "Stock Item Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity On Hand",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Bin Location",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Last Stocktake Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Last Cost Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Reorder Level",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Target Stock Level",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WWI Stock Item ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "StockHolding Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Integration",
+					"table": "StockHolding_Staging"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FactStockHolding')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IntegrationToFact"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Holding Key",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "Stock Item Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity On Hand",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Bin Location",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Last Stocktake Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Last Cost Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Reorder Level",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Target Stock Level",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Lineage Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "StockHolding Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Fact",
+					"table": "Stock Holding"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

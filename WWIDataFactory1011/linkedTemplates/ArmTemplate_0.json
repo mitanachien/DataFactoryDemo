@@ -341,6 +341,134 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DimensionStockItem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IntegrationToDimension"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Item Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WWI Stock Item ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Stock Item",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Selling Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Buying Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Brand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lead Time Days",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity Per Outer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Is Chiller Stock",
+						"type": "bit"
+					},
+					{
+						"name": "Barcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Tax Rate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Unit Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Recommended Retail Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Typical Weight Per Unit",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Photo",
+						"type": "varbinary"
+					},
+					{
+						"name": "Valid From",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Valid To",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Lineage Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "iscurrent",
+						"type": "bit"
+					},
+					{
+						"name": "StockItem Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Dimension",
+					"table": "Stock Item"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/WWI_DW')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/IntegrationCustomer')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1360,266 +1488,77 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DimensionStockItem')]",
+			"name": "[concat(parameters('factoryName'), '/odsWarehouseStockItemHoldings')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "WWI_DW",
+					"referenceName": "ods",
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "IntegrationToDimension"
+					"name": "odsToIntegrationStockItem"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "Stock Item Key",
+						"name": "SurrogateKey",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "StockItemID",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "WWI Stock Item ID",
+						"name": "QuantityOnHand",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "Stock Item",
+						"name": "BinLocation",
 						"type": "nvarchar"
 					},
 					{
-						"name": "Color",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Selling Package",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Buying Package",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Brand",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Size",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Lead Time Days",
+						"name": "LastStocktakeQuantity",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "Quantity Per Outer",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Is Chiller Stock",
-						"type": "bit"
-					},
-					{
-						"name": "Barcode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Tax Rate",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "Unit Price",
+						"name": "LastCostPrice",
 						"type": "decimal",
 						"precision": 18,
 						"scale": 2
 					},
 					{
-						"name": "Recommended Retail Price",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
-					},
-					{
-						"name": "Typical Weight Per Unit",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "Photo",
-						"type": "varbinary"
-					},
-					{
-						"name": "Valid From",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "Valid To",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "Lineage Key",
+						"name": "ReorderLevel",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "iscurrent",
-						"type": "bit"
+						"name": "TargetStockLevel",
+						"type": "int",
+						"precision": 10
 					},
 					{
-						"name": "StockItem Surrogate Key",
-						"type": "nchar"
+						"name": "LastEditedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LastEditedWhen",
+						"type": "datetime2",
+						"scale": 7
 					}
 				],
 				"typeProperties": {
-					"schema": "Dimension",
-					"table": "Stock Item"
+					"schema": "Warehouse",
+					"table": "StockItemHoldings"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/WWI_DW')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/WWIToOds')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEachTable",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "List Tables",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('List Tables').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy Tables",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderQuery": {
-												"value": "SELECT newid() AS SurrogateKey, * FROM @{item().MyTableWithSchema}\n",
-												"type": "Expression"
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "AzureSqlSink",
-											"preCopyScript": {
-												"value": "DROP TABLE IF EXISTS @{item().MyTableWithSchema};\n",
-												"type": "Expression"
-											},
-											"tableOption": "autoCreate",
-											"disableMetricsCollection": false
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "WWI",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "ods",
-											"type": "DatasetReference",
-											"parameters": {
-												"TableName": {
-													"value": "@item().MyTable",
-													"type": "Expression"
-												},
-												"SchemaName": {
-													"value": "@item().MySchema",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					},
-					{
-						"name": "List Tables",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT '[' + TABLE_SCHEMA + '].[' + TABLE_NAME + ']' As MyTableWithSchema\n, TABLE_SCHEMA As MySchema,\nTABLE_NAME As MyTable\nFROM [WideWorldImporters-Standard].information_schema.tables\nWHERE table_type = 'BASE TABLE';",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "WWI",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "WWIToOds"
-				},
-				"annotations": [],
-				"lastPublishTime": "2021-10-11T19:54:46Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/WWI')]",
-				"[concat(variables('factoryId'), '/datasets/ods')]"
+				"[concat(variables('factoryId'), '/linkedServices/ods')]"
 			]
 		}
 	]
