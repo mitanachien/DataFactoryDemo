@@ -1,0 +1,332 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "WWIDataFactory1011"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/StockItem')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "odsToIngestion",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "IntegrationStockItem",
+								"type": "DataFlowReference"
+							},
+							"integrationRuntime": {
+								"referenceName": "integrationRuntime2",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "IngestionToDimension",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "odsToIngestion",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DimensionStockItem",
+								"type": "DataFlowReference"
+							},
+							"integrationRuntime": {
+								"referenceName": "integrationRuntime2",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"folder": {
+					"name": "OdsToWarehouse"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DimensionStockItem')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DimensionStockItem')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "IntegrationToDimension"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "IntegrationStockItem",
+								"type": "DatasetReference"
+							},
+							"name": "IntStockItem"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionStockItem",
+								"type": "DatasetReference"
+							},
+							"name": "DimStockItem"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimensionStockItem",
+								"type": "DatasetReference"
+							},
+							"name": "sinkNew"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionStockItem",
+								"type": "DatasetReference"
+							},
+							"name": "sinkInactive"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimensionStockItem",
+								"type": "DatasetReference"
+							},
+							"name": "sinkUpdate"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LookupIDs"
+						},
+						{
+							"name": "SelectColumns"
+						},
+						{
+							"name": "ConditionSplit"
+						},
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "CheckForChanges"
+						},
+						{
+							"name": "SetAttrInactive"
+						},
+						{
+							"name": "SetAttrUpdate"
+						},
+						{
+							"name": "AlterRow1"
+						}
+					],
+					"script": "source(output(\n\t\t{Stock Item Staging Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> IntStockItem\nsource(output(\n\t\t{Stock Item Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\tiscurrent as boolean,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimStockItem\nIntStockItem, DimStockItem lookup(IntStockItem@{WWI Stock Item ID} == DimStockItem@{WWI Stock Item ID},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupIDs\nLookupIDs select(mapColumn(\n\t\t{WWI Stock Item ID} = IntStockItem@{WWI Stock Item ID},\n\t\t{Stock Item} = IntStockItem@{Stock Item},\n\t\tColor = IntStockItem@Color,\n\t\t{Selling Package} = IntStockItem@{Selling Package},\n\t\t{Buying Package} = IntStockItem@{Buying Package},\n\t\tBrand = IntStockItem@Brand,\n\t\tSize = IntStockItem@Size,\n\t\t{Lead Time Days} = IntStockItem@{Lead Time Days},\n\t\t{Quantity Per Outer} = IntStockItem@{Quantity Per Outer},\n\t\t{Is Chiller Stock} = IntStockItem@{Is Chiller Stock},\n\t\tBarcode = IntStockItem@Barcode,\n\t\t{Tax Rate} = IntStockItem@{Tax Rate},\n\t\t{Unit Price} = IntStockItem@{Unit Price},\n\t\t{Recommended Retail Price} = IntStockItem@{Recommended Retail Price},\n\t\t{Typical Weight Per Unit} = IntStockItem@{Typical Weight Per Unit},\n\t\tPhoto = IntStockItem@Photo,\n\t\t{Int Valid From} = IntStockItem@{Valid From},\n\t\t{Int Valid To} = IntStockItem@{Valid To},\n\t\t{StockItem Surrogate Key} = IntStockItem@{StockItem Surrogate Key},\n\t\t{Dim Valid From} = DimStockItem@{Valid From},\n\t\t{Dim Valid To} = DimStockItem@{Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nSelectColumns split(isNull(iscurrent),\n\tdisjoint: false) ~> ConditionSplit@(NewRow, CheckForUpdates)\nConditionSplit@NewRow derive(iscurrent = true(),\n\t\t{New Valid From} = currentTimestamp(),\n\t\t{Lineage Key} = 2) ~> DerivedColumn1\nConditionSplit@CheckForUpdates, DimStockItem exists(ConditionSplit@CheckForUpdates@{WWI Stock Item ID} == DimStockItem@{WWI Stock Item ID} &&\r\n\r\n(\r\n    ConditionSplit@CheckForUpdates@{Stock Item} != DimStockItem@{Stock Item} ||\r\n    ConditionSplit@CheckForUpdates@Color != DimStockItem@Color ||\r\n    ConditionSplit@CheckForUpdates@{Selling Package} != DimStockItem@{Selling Package} ||\r\n    ConditionSplit@CheckForUpdates@{Buying Package} != DimStockItem@{Buying Package} ||\r\n    ConditionSplit@CheckForUpdates@Brand != DimStockItem@Brand ||\r\n    ConditionSplit@CheckForUpdates@Size != DimStockItem@Size ||\r\n    ConditionSplit@CheckForUpdates@{Lead Time Days} != DimStockItem@{Lead Time Days} ||\r\n    ConditionSplit@CheckForUpdates@{Quantity Per Outer} != DimStockItem@{Quantity Per Outer} ||\r\n    ConditionSplit@CheckForUpdates@{Is Chiller Stock} != DimStockItem@{Is Chiller Stock} ||\r\n    ConditionSplit@CheckForUpdates@Barcode != DimStockItem@Barcode ||\r\n    ConditionSplit@CheckForUpdates@{Tax Rate} != DimStockItem@{Tax Rate} ||\r\n    ConditionSplit@CheckForUpdates@{Unit Price} != DimStockItem@{Unit Price} ||\r\n    ConditionSplit@CheckForUpdates@{Recommended Retail Price} != DimStockItem@{Recommended Retail Price} ||\r\n    ConditionSplit@CheckForUpdates@{Typical Weight Per Unit} != DimStockItem@{Typical Weight Per Unit} ||\r\n    ConditionSplit@CheckForUpdates@Photo != DimStockItem@Photo ||\r\n    {Int Valid From} != {Valid From} ||\r\n    {Int Valid To} != {Valid To}\r\n),\n\tnegate:false,\n\tbroadcast: 'auto')~> CheckForChanges\nCheckForChanges derive({New Valid To} = currentTimestamp()) ~> SetAttrInactive\nCheckForChanges derive(iscurrent = true(),\n\t\t{New Valid From} = currentTimestamp()) ~> SetAttrUpdate\nSetAttrInactive alterRow(updateIf(iscurrent == true())) ~> AlterRow1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Stock Item Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\tiscurrent as boolean,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Stock Item ID},\n\t\t{Stock Item},\n\t\tColor,\n\t\t{Selling Package},\n\t\t{Buying Package},\n\t\tBrand,\n\t\tSize,\n\t\t{Lead Time Days},\n\t\t{Quantity Per Outer},\n\t\t{Is Chiller Stock},\n\t\tBarcode,\n\t\t{Tax Rate},\n\t\t{Unit Price},\n\t\t{Recommended Retail Price},\n\t\t{Typical Weight Per Unit},\n\t\tPhoto,\n\t\t{Valid From} = {New Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent,\n\t\t{StockItem Surrogate Key}\n\t)) ~> sinkNew\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Stock Item Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\tiscurrent as boolean,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['WWI Stock Item ID','iscurrent'],\n\tformat: 'table',\n\tpreSQLs:['UPDATE Dimension.[Stock Item]\\nSET [Valid To] = GETDATE()\\nWHERE iscurrent = 1;'],\n\tpostSQLs:['UPDATE Dimension.[Stock Item]\\nSET iscurrent = 0;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Stock Item ID},\n\t\t{Stock Item},\n\t\tColor,\n\t\t{Selling Package},\n\t\t{Buying Package},\n\t\tBrand,\n\t\tSize,\n\t\t{Lead Time Days},\n\t\t{Quantity Per Outer},\n\t\t{Is Chiller Stock},\n\t\tBarcode,\n\t\t{Tax Rate},\n\t\t{Unit Price},\n\t\t{Recommended Retail Price},\n\t\t{Typical Weight Per Unit},\n\t\tPhoto,\n\t\t{Valid From} = {Dim Valid From},\n\t\t{Valid To} = {New Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent,\n\t\t{StockItem Surrogate Key}\n\t)) ~> sinkInactive\nSetAttrUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Stock Item Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\tiscurrent as boolean,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 3,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Stock Item ID},\n\t\t{Stock Item},\n\t\tColor,\n\t\t{Selling Package},\n\t\t{Buying Package},\n\t\tBrand,\n\t\tSize,\n\t\t{Lead Time Days},\n\t\t{Quantity Per Outer},\n\t\t{Is Chiller Stock},\n\t\tBarcode,\n\t\t{Tax Rate},\n\t\t{Unit Price},\n\t\t{Recommended Retail Price},\n\t\t{Typical Weight Per Unit},\n\t\tPhoto,\n\t\t{Valid From} = {New Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent,\n\t\t{StockItem Surrogate Key}\n\t)) ~> sinkUpdate"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DimensionStockItem')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DimensionStockItem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IntegrationToDimension"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Item Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WWI Stock Item ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Stock Item",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Selling Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Buying Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Brand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lead Time Days",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity Per Outer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Is Chiller Stock",
+						"type": "bit"
+					},
+					{
+						"name": "Barcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Tax Rate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Unit Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Recommended Retail Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Typical Weight Per Unit",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Photo",
+						"type": "varbinary"
+					},
+					{
+						"name": "Valid From",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Valid To",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Lineage Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "iscurrent",
+						"type": "bit"
+					},
+					{
+						"name": "StockItem Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Dimension",
+					"table": "Stock Item"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DimensionStockItem",
+								"type": "DataFlowReference"
+							},
+							"integrationRuntime": {
+								"referenceName": "integrationRuntime2",
+								"type": "IntegrationRuntimeReference"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DimensionStockItem')]"
+			]
+		}
+	]
+}
