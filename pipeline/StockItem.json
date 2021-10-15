@@ -5,14 +5,7 @@
 			{
 				"name": "odsToIngestion",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "RemoveNull",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "1.00:00:00",
 					"retry": 0,
@@ -31,32 +24,6 @@
 						"type": "IntegrationRuntimeReference"
 					},
 					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "RemoveNull",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": "UPDATE Warehouse.StockItems\nSET Color = 'N/A'\nWHERE Color IS NULL;\n\nUPDATE Warehouse.StockItems\nSET Brand = 'N/A'\nWHERE Brand IS NULL;\n\nUPDATE Warehouse.StockItems\nSET Size = 'N/A'\nWHERE Size IS NULL;\n\nUPDATE Warehouse.StockItems\nSET Barcode = 'N/A'\nWHERE Barcode IS NULL;",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "odsWarehouseStockItems",
-						"type": "DatasetReference"
-					},
-					"firstRowOnly": false
 				}
 			}
 		],
