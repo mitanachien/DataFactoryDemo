@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "IntegrationStockHolding",
+						"referenceName": "FactStockHolding",
 						"type": "DataFlowReference"
 					},
 					"integrationRuntime": {
