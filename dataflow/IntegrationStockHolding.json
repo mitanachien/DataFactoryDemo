@@ -1,0 +1,45 @@
+{
+	"name": "IntegrationStockHolding",
+	"properties": {
+		"folder": {
+			"name": "odsToIntegration"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "odsWarehouseStockItemHoldings",
+						"type": "DatasetReference"
+					},
+					"name": "odsStockHolding"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimensionStockItem",
+						"type": "DatasetReference"
+					},
+					"name": "dimStockItem"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "WWI_DW_StockHolding",
+						"type": "DatasetReference"
+					},
+					"name": "IntStockHolding"
+				}
+			],
+			"transformations": [
+				{
+					"name": "odsStockHoldingdimStockItem"
+				},
+				{
+					"name": "Filter1"
+				}
+			],
+			"script": "source(output(\n\t\tSurrogateKey as string,\n\t\tStockItemID as integer,\n\t\tQuantityOnHand as integer,\n\t\tBinLocation as string,\n\t\tLastStocktakeQuantity as integer,\n\t\tLastCostPrice as decimal(18,2),\n\t\tReorderLevel as integer,\n\t\tTargetStockLevel as integer,\n\t\tLastEditedBy as integer,\n\t\tLastEditedWhen as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> odsStockHolding\nsource(output(\n\t\t{Stock Item Key} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{Stock Item} as string,\n\t\tColor as string,\n\t\t{Selling Package} as string,\n\t\t{Buying Package} as string,\n\t\tBrand as string,\n\t\tSize as string,\n\t\t{Lead Time Days} as integer,\n\t\t{Quantity Per Outer} as integer,\n\t\t{Is Chiller Stock} as boolean,\n\t\tBarcode as string,\n\t\t{Tax Rate} as decimal(18,3),\n\t\t{Unit Price} as decimal(18,2),\n\t\t{Recommended Retail Price} as decimal(18,2),\n\t\t{Typical Weight Per Unit} as decimal(18,3),\n\t\tPhoto as binary,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\tiscurrent as boolean,\n\t\t{StockItem Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> dimStockItem\nodsStockHolding, dimStockItem join(StockItemID == {WWI Stock Item ID},\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> odsStockHoldingdimStockItem\nodsStockHoldingdimStockItem filter(iscurrent == true()) ~> Filter1\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Stock Holding Staging Key} as long,\n\t\t{Stock Item Key} as integer,\n\t\t{Quantity On Hand} as integer,\n\t\t{Bin Location} as string,\n\t\t{Last Stocktake Quantity} as integer,\n\t\t{Last Cost Price} as decimal(18,2),\n\t\t{Reorder Level} as integer,\n\t\t{Target Stock Level} as integer,\n\t\t{WWI Stock Item ID} as integer,\n\t\t{StockHolding Surrogate Key} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{Stock Item Key},\n\t\t{Quantity On Hand} = QuantityOnHand,\n\t\t{Bin Location} = BinLocation,\n\t\t{Last Stocktake Quantity} = LastStocktakeQuantity,\n\t\t{Last Cost Price} = LastCostPrice,\n\t\t{Reorder Level} = ReorderLevel,\n\t\t{Target Stock Level} = TargetStockLevel,\n\t\t{WWI Stock Item ID} = StockItemID,\n\t\t{StockHolding Surrogate Key} = SurrogateKey\n\t)) ~> IntStockHolding"
+		}
+	}
+}
