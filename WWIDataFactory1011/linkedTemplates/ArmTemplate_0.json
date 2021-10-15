@@ -414,6 +414,125 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/IntegrationStockItem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IntegrationToDimension"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Item Staging Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WWI Stock Item ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Stock Item",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Selling Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Buying Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Brand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lead Time Days",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity Per Outer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Is Chiller Stock",
+						"type": "bit"
+					},
+					{
+						"name": "Barcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Tax Rate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Unit Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Recommended Retail Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Typical Weight Per Unit",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Photo",
+						"type": "varbinary"
+					},
+					{
+						"name": "Valid From",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Valid To",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "StockItem Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Integration",
+					"table": "StockItem_Staging"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/WWI_DW')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/WWI_DW_Customer')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -435,6 +554,163 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/WWI_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WWI_DW_StockItem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "WWI_DW",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "odsToIntegrationStockItem"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock Item Staging Key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WWI Stock Item ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Stock Item",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Selling Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Buying Package",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Brand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Lead Time Days",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Quantity Per Outer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Is Chiller Stock",
+						"type": "bit"
+					},
+					{
+						"name": "Barcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Tax Rate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Unit Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Recommended Retail Price",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "Typical Weight Per Unit",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "Photo",
+						"type": "varbinary"
+					},
+					{
+						"name": "Valid From",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "Valid To",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "StockItem Surrogate Key",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Integration",
+					"table": "StockItem_Staging"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/WWI_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ods')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ods",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "WWIToOds"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ods')]"
 			]
 		},
 		{
@@ -548,44 +824,6 @@
 				"typeProperties": {
 					"schema": "Application",
 					"table": "People"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ods')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ods')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ods",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"TableName": {
-						"type": "string"
-					},
-					"SchemaName": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "WWIToOds"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().SchemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
 				}
 			},
 			"dependsOn": [
@@ -869,6 +1107,259 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/odsWarehouseColors')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ods",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "odsToIntegrationStockItem"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SurrogateKey",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ColorID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ColorName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ValidFrom",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "ValidTo",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "Warehouse",
+					"table": "Colors"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ods')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/odsWarehousePackageTypes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ods",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "odsToIntegrationStockItem"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SurrogateKey",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "PackageTypeID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PackageTypeName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ValidFrom",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "ValidTo",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "Warehouse",
+					"table": "PackageTypes"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ods')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/odsWarehouseStockItems')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ods",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "odsToIntegrationStockItem"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SurrogateKey",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "StockItemID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "StockItemName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SupplierID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ColorID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "UnitPackageID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OuterPackageID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Brand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LeadTimeDays",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "QuantityPerOuter",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IsChillerStock",
+						"type": "bit"
+					},
+					{
+						"name": "Barcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TaxRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "UnitPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "RecommendedRetailPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "TypicalWeightPerUnit",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "MarketingComments",
+						"type": "nvarchar"
+					},
+					{
+						"name": "InternalComments",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Photo",
+						"type": "varbinary"
+					},
+					{
+						"name": "CustomFields",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Tags",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SearchDetails",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ValidFrom",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "ValidTo",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "Warehouse",
+					"table": "StockItems"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ods')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/WWIToOds')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1078,205 +1569,12 @@
 							"name": "SetAttrInactive"
 						}
 					],
-					"script": "source(output(\n\t\t{Customer Staging Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Customer Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Integration\nsource(output(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimCustomer\nIntegration, DimCustomer lookup(Integration@{WWI Customer ID} == DimCustomer@{WWI Customer ID},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupIDs\nSelectColumns split(isNull(iscurrent),\n\tdisjoint: true) ~> ConditionSplit1@(NewRow, CheckForUpdates)\nConditionSplit1@NewRow derive(iscurrent = true(),\n\t\t{Valid From} = currentTimestamp(),\n\t\t{Lineage Key} = 2) ~> SetAttrsForNew\nConditionSplit1@CheckForUpdates, DimCustomer exists(ConditionSplit1@CheckForUpdates@{WWI Customer ID} == DimCustomer@{WWI Customer ID} &&\r\n\r\n(\r\n    ConditionSplit1@CheckForUpdates@Customer != DimCustomer@Customer ||\r\n    ConditionSplit1@CheckForUpdates@{Bill To Customer} != DimCustomer@{Bill To Customer} ||\r\n    ConditionSplit1@CheckForUpdates@Category != DimCustomer@Category ||\r\n    ConditionSplit1@CheckForUpdates@{Buying Group} != DimCustomer@{Buying Group} ||\r\n    ConditionSplit1@CheckForUpdates@{Primary Contact} != DimCustomer@{Primary Contact} ||\r\n    ConditionSplit1@CheckForUpdates@{Postal Code} != DimCustomer@{Postal Code} ||\r\n    {Int Valid From} != {Valid From} ||\r\n    {Int Valid To} != {Valid To}\r\n),\n\tnegate:false,\n\tbroadcast: 'left')~> checkForChanges\ncheckForChanges derive(iscurrent = true(),\n\t\t{New Valid From} = currentTimestamp()) ~> SetAttrUpdate\nLookupIDs select(mapColumn(\n\t\t{WWI Customer ID} = Integration@{WWI Customer ID},\n\t\tCustomer = Integration@Customer,\n\t\t{Bill To Customer} = Integration@{Bill To Customer},\n\t\tCategory = Integration@Category,\n\t\t{Buying Group} = Integration@{Buying Group},\n\t\t{Primary Contact} = Integration@{Primary Contact},\n\t\t{Postal Code} = Integration@{Postal Code},\n\t\t{Int Valid From} = Integration@{Valid From},\n\t\t{Int Valid To} = Integration@{Valid To},\n\t\t{Customer Surrogate Key} = Integration@{Customer Surrogate Key},\n\t\t{Dim Valid From} = DimCustomer@{Valid From},\n\t\t{Dim Valid To} = DimCustomer@{Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nSetAttrInactive alterRow(updateIf(iscurrent == true())) ~> AlterRow1\ncheckForChanges derive({New Valid To} = currentTimestamp()) ~> SetAttrInactive\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['WWI Customer ID','iscurrent'],\n\tformat: 'table',\n\tpreSQLs:['UPDATE Dimension.Customer\\nSET [Valid To] = GETDATE()\\nWHERE iscurrent = 1;'],\n\tpostSQLs:['UPDATE Dimension.Customer\\nSET iscurrent = 0;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {Dim Valid From},\n\t\t{Valid To} = {New Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> SinkInactive\nSetAttrUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 3,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {New Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkUpdate\nSetAttrsForNew sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkNew"
+					"script": "source(output(\n\t\t{Customer Staging Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Customer Surrogate Key} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Integration\nsource(output(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DimCustomer\nIntegration, DimCustomer lookup(Integration@{WWI Customer ID} == DimCustomer@{WWI Customer ID},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LookupIDs\nSelectColumns split(isNull(iscurrent),\n\tdisjoint: true) ~> ConditionSplit1@(NewRow, CheckForUpdates)\nConditionSplit1@NewRow derive(iscurrent = true(),\n\t\t{Valid From} = currentTimestamp(),\n\t\t{Lineage Key} = 2) ~> SetAttrsForNew\nConditionSplit1@CheckForUpdates, DimCustomer exists(ConditionSplit1@CheckForUpdates@{WWI Customer ID} == DimCustomer@{WWI Customer ID} &&\r\n\r\n(\r\n    ConditionSplit1@CheckForUpdates@Customer != DimCustomer@Customer ||\r\n    ConditionSplit1@CheckForUpdates@{Bill To Customer} != DimCustomer@{Bill To Customer} ||\r\n    ConditionSplit1@CheckForUpdates@Category != DimCustomer@Category ||\r\n    ConditionSplit1@CheckForUpdates@{Buying Group} != DimCustomer@{Buying Group} ||\r\n    ConditionSplit1@CheckForUpdates@{Primary Contact} != DimCustomer@{Primary Contact} ||\r\n    ConditionSplit1@CheckForUpdates@{Postal Code} != DimCustomer@{Postal Code} ||\r\n    {Int Valid From} != {Valid From} ||\r\n    {Int Valid To} != {Valid To}\r\n),\n\tnegate:false,\n\tbroadcast: 'left')~> checkForChanges\ncheckForChanges derive(iscurrent = true(),\n\t\t{New Valid From} = currentTimestamp()) ~> SetAttrUpdate\nLookupIDs select(mapColumn(\n\t\t{WWI Customer ID} = Integration@{WWI Customer ID},\n\t\tCustomer = Integration@Customer,\n\t\t{Bill To Customer} = Integration@{Bill To Customer},\n\t\tCategory = Integration@Category,\n\t\t{Buying Group} = Integration@{Buying Group},\n\t\t{Primary Contact} = Integration@{Primary Contact},\n\t\t{Postal Code} = Integration@{Postal Code},\n\t\t{Int Valid From} = Integration@{Valid From},\n\t\t{Int Valid To} = Integration@{Valid To},\n\t\t{Customer Surrogate Key} = Integration@{Customer Surrogate Key},\n\t\t{Dim Valid From} = DimCustomer@{Valid From},\n\t\t{Dim Valid To} = DimCustomer@{Valid To},\n\t\t{Lineage Key},\n\t\tiscurrent\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectColumns\nSetAttrInactive alterRow(updateIf(iscurrent==true())) ~> AlterRow1\ncheckForChanges derive({New Valid To} = currentTimestamp()) ~> SetAttrInactive\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['WWI Customer ID','iscurrent'],\n\tformat: 'table',\n\tpreSQLs:['UPDATE Dimension.Customer\\nSET [Valid To] = GETDATE()\\nWHERE iscurrent = 1;'],\n\tpostSQLs:['UPDATE Dimension.Customer\\nSET iscurrent = 0;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {Dim Valid From},\n\t\t{Valid To} = {New Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> SinkInactive\nSetAttrUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 3,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From} = {New Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkUpdate\nSetAttrsForNew sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{Customer Key} as integer,\n\t\t{WWI Customer ID} as integer,\n\t\tCustomer as string,\n\t\t{Bill To Customer} as string,\n\t\tCategory as string,\n\t\t{Buying Group} as string,\n\t\t{Primary Contact} as string,\n\t\t{Postal Code} as string,\n\t\t{Valid From} as timestamp,\n\t\t{Valid To} as timestamp,\n\t\t{Lineage Key} as integer,\n\t\t{Customer Surrogate Key} as string,\n\t\tiscurrent as boolean\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID},\n\t\tCustomer,\n\t\t{Bill To Customer},\n\t\tCategory,\n\t\t{Buying Group},\n\t\t{Primary Contact},\n\t\t{Postal Code},\n\t\t{Valid From},\n\t\t{Valid To} = {Int Valid To},\n\t\t{Lineage Key},\n\t\t{Customer Surrogate Key},\n\t\tiscurrent\n\t)) ~> sinkNew"
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/IntegrationCustomer')]",
 				"[concat(variables('factoryId'), '/datasets/DimensionCustomer')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/IntegrationCustomers')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "odsToIntegration"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "odsSalesCustomers",
-								"type": "DatasetReference"
-							},
-							"name": "Customers"
-						},
-						{
-							"dataset": {
-								"referenceName": "odsSalesCustomerCategories",
-								"type": "DatasetReference"
-							},
-							"name": "CustomerCategories"
-						},
-						{
-							"dataset": {
-								"referenceName": "odsSalesBuyingGroups",
-								"type": "DatasetReference"
-							},
-							"name": "BuyingGroups"
-						},
-						{
-							"dataset": {
-								"referenceName": "odsAppPeople",
-								"type": "DatasetReference"
-							},
-							"name": "People"
-						},
-						{
-							"dataset": {
-								"referenceName": "odsSalesCustomers",
-								"type": "DatasetReference"
-							},
-							"name": "Customers2"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "WWI_DW_Customer",
-								"type": "DatasetReference"
-							},
-							"name": "WWIDWCustomer"
-						}
-					],
-					"transformations": [
-						{
-							"name": "CustomersCategories"
-						},
-						{
-							"name": "CustomersBuyingGroups"
-						},
-						{
-							"name": "CustomersPeople"
-						},
-						{
-							"name": "CustomerBill"
-						},
-						{
-							"name": "AddDateAndSurrogateKey"
-						}
-					],
-					"script": "source(output(\n\t\tSurrogateKey as string,\n\t\tCustomerID as integer,\n\t\tCustomerName as string,\n\t\tBillToCustomerID as integer,\n\t\tCustomerCategoryID as integer,\n\t\tBuyingGroupID as integer,\n\t\tPrimaryContactPersonID as integer,\n\t\tAlternateContactPersonID as integer,\n\t\tDeliveryMethodID as integer,\n\t\tDeliveryCityID as integer,\n\t\tPostalCityID as integer,\n\t\tCreditLimit as decimal(18,2),\n\t\tAccountOpenedDate as date,\n\t\tStandardDiscountPercentage as decimal(18,3),\n\t\tIsStatementSent as boolean,\n\t\tIsOnCreditHold as boolean,\n\t\tPaymentDays as integer,\n\t\tPhoneNumber as string,\n\t\tFaxNumber as string,\n\t\tDeliveryRun as string,\n\t\tRunPosition as string,\n\t\tWebsiteURL as string,\n\t\tDeliveryAddressLine1 as string,\n\t\tDeliveryAddressLine2 as string,\n\t\tDeliveryPostalCode as string,\n\t\tDeliveryLocation as binary,\n\t\tPostalAddressLine1 as string,\n\t\tPostalAddressLine2 as string,\n\t\tPostalPostalCode as string,\n\t\tLastEditedBy as integer,\n\t\tValidFrom as timestamp,\n\t\tValidTo as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_COMMITTED',\n\tformat: 'table') ~> Customers\nsource(output(\n\t\tSurrogateKey as string,\n\t\tCustomerCategoryID as integer,\n\t\tCustomerCategoryName as string,\n\t\tLastEditedBy as integer,\n\t\tValidFrom as timestamp,\n\t\tValidTo as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> CustomerCategories\nsource(output(\n\t\tSurrogateKey as string,\n\t\tBuyingGroupID as integer,\n\t\tBuyingGroupName as string,\n\t\tLastEditedBy as integer,\n\t\tValidFrom as timestamp,\n\t\tValidTo as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> BuyingGroups\nsource(output(\n\t\tSurrogateKey as string,\n\t\tPersonID as integer,\n\t\tFullName as string,\n\t\tPreferredName as string,\n\t\tSearchName as string,\n\t\tIsPermittedToLogon as boolean,\n\t\tLogonName as string,\n\t\tIsExternalLogonProvider as boolean,\n\t\tHashedPassword as binary,\n\t\tIsSystemUser as boolean,\n\t\tIsEmployee as boolean,\n\t\tIsSalesperson as boolean,\n\t\tUserPreferences as string,\n\t\tPhoneNumber as string,\n\t\tFaxNumber as string,\n\t\tEmailAddress as string,\n\t\tPhoto as binary,\n\t\tCustomFields as string,\n\t\tOtherLanguages as string,\n\t\tLastEditedBy as integer,\n\t\tValidFrom as timestamp,\n\t\tValidTo as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> People\nsource(output(\n\t\tSurrogateKey as string,\n\t\tCustomerID as integer,\n\t\tCustomerName as string,\n\t\tBillToCustomerID as integer,\n\t\tCustomerCategoryID as integer,\n\t\tBuyingGroupID as integer,\n\t\tPrimaryContactPersonID as integer,\n\t\tAlternateContactPersonID as integer,\n\t\tDeliveryMethodID as integer,\n\t\tDeliveryCityID as integer,\n\t\tPostalCityID as integer,\n\t\tCreditLimit as decimal(18,2),\n\t\tAccountOpenedDate as date,\n\t\tStandardDiscountPercentage as decimal(18,3),\n\t\tIsStatementSent as boolean,\n\t\tIsOnCreditHold as boolean,\n\t\tPaymentDays as integer,\n\t\tPhoneNumber as string,\n\t\tFaxNumber as string,\n\t\tDeliveryRun as string,\n\t\tRunPosition as string,\n\t\tWebsiteURL as string,\n\t\tDeliveryAddressLine1 as string,\n\t\tDeliveryAddressLine2 as string,\n\t\tDeliveryPostalCode as string,\n\t\tDeliveryLocation as binary,\n\t\tPostalAddressLine1 as string,\n\t\tPostalAddressLine2 as string,\n\t\tPostalPostalCode as string,\n\t\tLastEditedBy as integer,\n\t\tValidFrom as timestamp,\n\t\tValidTo as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Customers2\nCustomers, CustomerCategories join(Customers@CustomerCategoryID == CustomerCategories@CustomerCategoryID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> CustomersCategories\nCustomersCategories, BuyingGroups join(Customers@BuyingGroupID == BuyingGroups@BuyingGroupID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> CustomersBuyingGroups\nCustomersBuyingGroups, People join(PrimaryContactPersonID == PersonID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> CustomersPeople\nCustomersPeople, Customers2 join(Customers@BillToCustomerID == Customers2@CustomerID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> CustomerBill\nCustomerBill derive(ValidFrom = currentTimestamp()) ~> AddDateAndSurrogateKey\nAddDateAndSurrogateKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{WWI Customer ID} = Customers@CustomerID,\n\t\tCustomer = Customers@CustomerName,\n\t\t{Bill To Customer} = Customers2@CustomerName,\n\t\tCategory = CustomerCategoryName,\n\t\t{Buying Group} = BuyingGroupName,\n\t\t{Primary Contact} = FullName,\n\t\t{Postal Code} = Customers@DeliveryPostalCode,\n\t\t{Valid From} = ValidFrom,\n\t\t{Valid To} = Customers@ValidTo,\n\t\t{Customer Surrogate Key} = Customers@SurrogateKey\n\t)) ~> WWIDWCustomer"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/odsSalesCustomers')]",
-				"[concat(variables('factoryId'), '/datasets/odsSalesCustomerCategories')]",
-				"[concat(variables('factoryId'), '/datasets/odsSalesBuyingGroups')]",
-				"[concat(variables('factoryId'), '/datasets/odsAppPeople')]",
-				"[concat(variables('factoryId'), '/datasets/WWI_DW_Customer')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Customers')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ToDimCustomers",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DimensionCustomer",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Integration": {},
-									"DimCustomer": {},
-									"SinkInactive": {},
-									"sinkUpdate": {},
-									"sinkNew": {}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "integrationRuntime2",
-								"type": "IntegrationRuntimeReference"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "IntegrationToDimension"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DimensionCustomer')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime2')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OdsToIntegrationCustomers')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "IntegrationCustomers",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Customers": {},
-									"CustomerCategories": {},
-									"BuyingGroups": {},
-									"People": {},
-									"Customers2": {},
-									"WWIDWCustomer": {}
-								}
-							},
-							"staging": {},
-							"integrationRuntime": {
-								"referenceName": "integrationRuntime2",
-								"type": "IntegrationRuntimeReference"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "OdsToIntegration"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/IntegrationCustomers')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime2')]"
 			]
 		}
 	]
