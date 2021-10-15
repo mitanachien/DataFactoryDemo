@@ -27,7 +27,7 @@
 				}
 			},
 			{
-				"name": "Data flow1",
+				"name": "IngestionToDimension",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
