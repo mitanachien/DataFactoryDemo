@@ -1,0 +1,69 @@
+{
+	"name": "IntegrationStockHolding",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WWI_DW",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "IntegrationToFact"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Stock Holding Staging Key",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Stock Item Key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Quantity On Hand",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Bin Location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Last Stocktake Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Last Cost Price",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Reorder Level",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Target Stock Level",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WWI Stock Item ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "StockHolding Surrogate Key",
+				"type": "nchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Integration",
+			"table": "StockHolding_Staging"
+		}
+	}
+}

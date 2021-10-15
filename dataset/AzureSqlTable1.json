@@ -1,0 +1,65 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WWI_DW",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "IntegrationToFact"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Stock Holding Key",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Stock Item Key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Quantity On Hand",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Bin Location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Last Stocktake Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Last Cost Price",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "Reorder Level",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Target Stock Level",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Lineage Key",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "Fact",
+			"table": "Stock Holding"
+		}
+	}
+}
