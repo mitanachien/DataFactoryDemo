@@ -1,9 +1,9 @@
 {
-	"name": "Test",
+	"name": "StockHolding",
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "odsToIntegration",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -27,6 +27,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "OdsToWarehouse"
+		},
 		"annotations": []
 	}
 }
